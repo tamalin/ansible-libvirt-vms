@@ -1,0 +1,8 @@
+---
+
+vm_defaults:
+  user: tamalin
+  password: tamalinAdmin
+  network: mgmtnet
+  external: external
+  packages: []

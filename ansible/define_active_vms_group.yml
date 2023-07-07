@@ -1,0 +1,21 @@
+---
+
+#
+# Dynamically define the active_vms group based upon settings/vms.yml
+# VM configuration.
+#
+
+- name: Dynamically define active VMs group
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  roles:
+    - setup_ssh
+  tasks:
+
+    - name: Define active_vms group if not already defined
+      ansible.builtin.include_role:
+        name: libvirt_vm
+        tasks_from: define_active_vms.yml
+      when:
+        - ('active_vms' not in groups)

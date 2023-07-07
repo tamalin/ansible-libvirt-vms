@@ -1,0 +1,12 @@
+---
+
+vm_packages:
+  required:
+    - apt-file
+    - bzip2
+    - e2fsprogs
+    - linux-generic-hwe-22.04
+    - mtr-tiny
+    - podman
+    - podman-docker
+    - xfsprogs

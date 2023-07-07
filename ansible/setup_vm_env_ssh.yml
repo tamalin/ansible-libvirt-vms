@@ -1,0 +1,16 @@
+---
+
+- name: Setup management SSH keys
+  hosts: localhost
+  gather_facts: false
+  tasks:
+
+    - name: Generate managment SSH keys
+      ansible.builtin.include_role:
+        name: setup_ssh
+        tasks_from: create_keys.yml
+
+    - name: Generate managment SSH config
+      ansible.builtin.include_role:
+        name: setup_ssh
+        tasks_from: create_config.yml

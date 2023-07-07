@@ -1,0 +1,20 @@
+---
+
+- name: Create cache dir if needed
+  ansible.builtin.file:
+    path: "{{ ubuntu.cache }}"
+    state: directory
+    mode: "0755"
+
+- name: Download Ubuntu Cloud image to cache if needed
+  ansible.builtin.get_url:
+    dest: "{{ ubuntu_image.cached }}"
+    url: "{{ ubuntu_image.url }}"
+    checksum: "{{ ubuntu_image.checksum }}"
+    mode: "0644"
+  register: ubuntu_image_download
+
+- name: Report image that was downloaded
+  ansible.builtin.debug:
+    msg: >-
+      Selected image available as '{{ ubuntu_image.cached }}'

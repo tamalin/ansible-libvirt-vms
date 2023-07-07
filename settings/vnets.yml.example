@@ -1,0 +1,27 @@
+---
+
+#
+# Specify list of Libvirt Networks to be managed
+#
+# It is recommended to have at least one network be DHCP enabled,
+# called 'testvmsnet' as in the example below, which can be used
+# to manage the VMs once they have been created. To simplify
+# determining the IP address of the VMs its is recommended that
+# you define mac and ip values for the VM nics on the testvmsnet
+# network so that DHCP static reservations can be defined for
+# the VM nic.
+#
+# NOTE: If existing Libvirt networks are using the specified
+# virbrX bridges you will need to either change the virbrX
+# values appropriately, or else remove the existing Libvirt
+# networks.
+#
+
+vnet_configs:
+
+  - name: testvmsnet
+    forward_mode: nat
+    bridge: virbr101
+    mac: 52:54:00:00:C1:00
+    cidr: 192.168.168.0/24
+    dhcp: true

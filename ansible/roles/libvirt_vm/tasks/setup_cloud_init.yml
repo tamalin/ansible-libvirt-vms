@@ -1,0 +1,38 @@
+---
+
+- name: Load cidata specific settings
+  ansible.builtin.include_vars: cidata.yml
+
+- name: Create cidata files
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/tmp/{{ item }}"
+    mode: "0600"
+  loop: "{{ cidata_files }}"
+
+- name: Remove old cloud init image file
+  become: true
+  ansible.builtin.file:
+    path: "{{ libvirt_vm.cloud_init.image }}"
+    state: absent
+
+- name: Create cloud init image
+  become: true
+  ansible.builtin.command: >-
+    mkisofs
+      -output {{ libvirt_vm.cloud_init.image }}
+      -volid cidata
+      -joliet
+      -rock
+    {% for cf in cidata_files %}
+      /tmp/{{ cf }}
+    {% endfor %}
+  changed_when: false
+
+- name: Remove cloud init data
+  ansible.builtin.file:
+    path: "/tmp{{ item }}"
+    state: absent
+  loop: "{{ cidata_files }}"
+  when:
+    - libvirt_vm.cloud_init.cleanup_tmpfiles | bool

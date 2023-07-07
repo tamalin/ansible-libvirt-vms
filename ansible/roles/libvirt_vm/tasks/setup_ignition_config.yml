@@ -1,0 +1,7 @@
+---
+
+- name: Create ignition config file
+  ansible.builtin.template:
+    src: "{{ libvirt_vm.ignition.template }}"
+    dest: "{{ libvirt_vm.ignition.file }}"
+    mode: "0600"

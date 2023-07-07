@@ -1,0 +1,34 @@
+---
+
+- name: Ensure required configuration settings are setup
+  import_playbook: check_config_settings.yml
+
+- name: Ensure libvirt_host is defined
+  import_playbook: define_libvirt_host.yml
+
+- name: Ensure SSH keys and config are generated
+  import_playbook: setup_vm_env_ssh.yml
+
+- name: Ensure libvirt_host has been setup
+  import_playbook: setup_libvirt_host.yml
+
+- name: Ensure required VM image has been retrieved
+  import_playbook: get_vm_image.yml
+
+- name: Create configured VNets
+  import_playbook: create_vnets.yml
+
+- name: Create configured VMs
+  import_playbook: create_vms.yml
+
+- name: Ensure configured VMs are running
+  import_playbook: check_vms_running.yml
+
+- name: Ensure SSH access has been configured
+  import_playbook: setup_vm_ssh.yml
+
+- name: Ensure root file system has been resized
+  import_playbook: grow_root_filesystem.yml
+
+- name: Ensure required required packages are installed
+  import_playbook: setup_vm_packages.yml

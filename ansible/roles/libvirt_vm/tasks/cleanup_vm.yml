@@ -1,0 +1,48 @@
+---
+
+- name: Determine list of running VMs
+  community.libvirt.virt:
+    command: list_vms
+  register: _list_vms
+
+- name: Print found VMs if any
+  ansible.builtin.debug:
+    msg: "Currently defined VMs: {{ _list_vms.list_vms }}"
+  when:
+    - (_list_vms.list_vms | length) > 0
+
+- name: If needed cleanup running VM {{ libvirt_vm.name }}
+  when:
+    - libvirt_vm.name in _list_vms.list_vms
+  block:
+    - name: If needed destroy running VM {{ libvirt_vm.name }}
+      community.libvirt.virt:
+        name: "{{ libvirt_vm.name }}"
+        state: destroyed
+
+    - name: If needed undefine VM {{ libvirt_vm.name }}
+      community.libvirt.virt:
+        name: "{{ libvirt_vm.name }}"
+        command: undefine
+
+    - name: Wait for cleanup of VM {{ libvirt_vm.name }}
+      community.libvirt.virt:
+        command: list_vms
+      register: _list_vms_check
+      until:
+        - libvirt_vm.name not in _list_vms_check.list_vms
+      retries: 30
+      delay: 2
+
+- name: Remove any extra disk for VM {{ libvirt_vm.name }}
+  become: true
+  ansible.builtin.file:
+    path: "{{ libvirt_vm.image.file | replace(libvirt_vm.name, libvirt_vm.name ~ '_' ~ item.name) }}"
+    state: absent
+  loop: "{{ libvirt_vm.extra_disks }}"
+
+- name: Remove image file for VM {{ libvirt_vm.name }}
+  become: true
+  ansible.builtin.file:
+    path: "{{ libvirt_vm.image.file }}"
+    state: absent

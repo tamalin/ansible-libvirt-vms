@@ -1,0 +1,15 @@
+---
+
+- name: Ensure libvirt_host is defined
+  import_playbook: define_libvirt_host.yml
+
+- name: Create all configured VNets
+  hosts: libvirt_host
+  tasks:
+    - name: Create specified Virtual Networks
+      ansible.builtin.include_role:
+        name: libvirt_vnet
+        tasks_from: create_vnet.yml
+      loop_control:
+        loop_var: vnet_config
+      loop: "{{ vnet_configs }}"

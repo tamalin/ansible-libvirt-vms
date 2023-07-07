@@ -1,0 +1,5 @@
+---
+
+- name: Show Ubuntu Cloud Image that is being used
+  ansible.builtin.debug:
+    var: ubuntu_image.name

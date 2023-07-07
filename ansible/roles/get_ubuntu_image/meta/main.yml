@@ -1,0 +1,20 @@
+---
+
+galaxy_info:
+  role_name: get_ubuntu_image
+  author: rahn.tamalin@gmail.com
+  description: Retrieve Ubuntu Cloud Images
+  company: Tamalin.net
+  license: Apache
+  min_ansible_version: "6.0"
+  platforms:
+    - name: opensuse
+      versions:
+        - "15.4"
+    - name: Ubuntu
+      versions:
+        - jammy
+  galaxy_tags: []
+
+dependencies:
+  - role: ubuntu_image_details

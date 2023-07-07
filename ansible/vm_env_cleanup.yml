@@ -1,0 +1,10 @@
+---
+
+- name: Ensure required configuration settings are setup
+  import_playbook: check_config_settings.yml
+
+- name: Cleanup any configured VMs that are running
+  import_playbook: cleanup_vms.yml
+
+- name: Cleanup any configured VNets that are running
+  import_playbook: cleanup_vnets.yml

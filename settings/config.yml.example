@@ -1,0 +1,48 @@
+---
+
+#
+# User configurable settings
+#
+
+# The Ubuntu server arch to target
+#ubuntu_arch: 'amd64'
+
+# Choice of image type; currently only choice is 'server'
+#ubuntu_type: 'server'
+
+# Choice of image type; currently only choice is 'cloudimg'
+#ubuntu_build: 'cloudimg'
+
+# Choice of 'cloud-init' or 'ignition'
+#ubuntu_init_type: 'cloud-init'
+
+# Choice of active Ubuntu release name
+#ubuntu_version: 'jammy'
+
+#
+# VM Management Settings
+#
+
+# management user account to create
+#mgmt_user: tamalin
+
+# pre-hashed password for management user account
+#mgmt_password_hash: >-
+#  $6$Ejiol/cSWBdwu27a$RBfhp8VdLrs5jc5dRVY0sLuvTFwTNbVJsaDz2.J0nhoSIWCTwoo..8d.TPMhMaZhtc6uMT/o.zw2YOgty.Plx1
+
+# password for management user account, will be SHA512 hashed;
+# used only if mgmt_password_hash is not provided
+#mgmt_password: tamalinAdmin
+
+#
+# SSH settings
+#
+
+# SSH Public Keys to Register
+#ssh_pub_keys:
+#  files:
+#    - ~/.ssh/id_ed25519.pub
+#    - ~/.ssh/id_rsa.pub
+#  strings:
+#    - "<SSH Public Key Text>"  # noqa yaml[line-length]
+#

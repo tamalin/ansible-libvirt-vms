@@ -1,0 +1,104 @@
+---
+
+#
+# VM Management Libvirt Network
+#
+# This libvirt network is used to manage the created VMs by dynamically
+# creating an Ansible host group (active_vms) using the IP address
+# associated with the management network's NIC.
+#
+# NOTE: The specified libvirt network should be DHCP enabled to ensure that
+# the IP addresses have been automatically assigned to the NICs when the
+# VMs are provisioned.
+#
+
+vm_mgmt_net: testvmsnet
+
+#
+# VM Management Python
+#
+# The Python binary to use for remote management of VMs
+#
+vm_mgmt_python: /usr/bin/python3
+
+#
+# Specify list of VMs to bring up
+#
+# Reasonable defaults are provided for most settings so potentially all
+# that is needed to specify the relevant networks, and tweak memory and
+# cpu counts.
+#
+# Ensure any libvirt networks that you specify are either defined in
+# settings/vnets.yml or already exist on the libvirt host.
+#
+# When specifying a VM ensure that you provide a name, and the nics
+# list for network connectivity. When specifying nics for a libvirt
+# network that is DHCP enabled, you should specify a mac address and
+# an IP address so that a DHCP static address reservation can be set
+# up for the VM on that network.
+#
+# See ansible/roles/libvirt_vm/defaults/main.yml for more details on
+# the default values used for anything not specified here.
+#
+
+vm_configs:
+
+  - name: testvma
+    nics:
+
+      # This will be the network used to manage the VMs
+      - nettype: network
+        netdev: "{{ vm_mgmt_net }}"
+        mac: "52:54:00:00:C1:02"
+        ip: "192.168.168.12"
+        name: "mgmt"
+
+      # Only configure this if you have a bridged network you want to be
+      # able to access the VMs via
+      - nettype: bridge
+        netdev: br0
+        # Specify a MAC here and either define a static reservation for
+        # this VM in your network's DHCP config, or specify the static
+        # networking config settings here
+        mac: "52:54:00:00:C0:02"
+        name: "external"
+#       addr: 192.168.0.12/20
+#       gateway: 192.168.0.1
+#       metric: 100
+#       nameservers:
+#         search:
+#           - testvms.local
+#         addresses:
+#           - 1.1.1.1  # CloudFlare
+#           - 8.8.8.8  # Google
+#           - 8.8.4.4  # Google
+
+  - name: testvmb
+    nics:
+
+      # This will be the network used to manage the VMs
+      - nettype: network
+        netdev: "{{ vm_mgmt_net }}"
+        mac: "52:54:00:00:C1:03"
+        ip: "192.168.168.13"
+        name: "mgmt"
+
+      # Only configure this if you have a bridged network you want to be
+      # able to access the VMs via
+      - nettype: bridge
+        netdev: br0
+        # Specify a MAC here and either define a static reservation for
+        # this VM in your network's DHCP config, or specify the static
+        # networking config settings here
+        mac: "52:54:00:00:C0:03"
+        name: "external"
+#       addr: 192.168.0.13/20
+#       gateway: 192.168.0.1
+#       metric: 100
+#       nameservers:
+#         search:
+#           - testvms.local
+#         addresses:
+#           - 1.1.1.1  # CloudFlare
+#           - 8.8.8.8  # Google
+#           - 8.8.4.4  # Google

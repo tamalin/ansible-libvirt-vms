@@ -1,0 +1,18 @@
+---
+
+_ubuntu_image_name: >-
+  {{ ([ubuntu.image.release,
+       ubuntu.image.type,
+       ubuntu.image.build,
+       ubuntu.image.arch] | join('-')) ~ '.img' }}
+
+_ubuntu_image_url_base: >-
+  {{ [ubuntu.image.base_url,
+      ubuntu.image.release,
+      ubuntu.image.date] | join('/') }}
+
+ubuntu_image:
+  name: "{{ _ubuntu_image_name }}"
+  url: "{{ [_ubuntu_image_url_base, _ubuntu_image_name] | join('/') }}"
+  checksum: "sha256:{{ [_ubuntu_image_url_base, 'SHA256SUMS'] | join('/') }}"
+  cached: "{{ ubuntu.cache }}/{{ _ubuntu_image_name }}"

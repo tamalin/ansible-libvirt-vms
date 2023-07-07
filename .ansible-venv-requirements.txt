@@ -1,0 +1,4 @@
+ansible>=2.9.17
+ansible-lint
+#dnspython
+passlib

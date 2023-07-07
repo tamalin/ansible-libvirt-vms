@@ -1,0 +1,21 @@
+---
+
+galaxy_info:
+  role_name: libvirt_vm
+  author: fmccarthy@suse.com
+  description: Manage VMs using Libvirt
+  company: SUSE
+  license: Apache
+  min_ansible_version: "6.0"
+  platforms:
+    - name: opensuse
+      versions:
+        - "15.4"
+    - name: Ubuntu
+      versions:
+        - jammy
+  galaxy_tags: []
+
+dependencies:
+  - role: setup_ssh
+  - role: ubuntu_image_details

@@ -1,0 +1,14 @@
+---
+
+- name: Ensure active_vms group is defined
+  import_playbook: define_active_vms_group.yml
+
+- name: Setup SSH on active VMs
+  hosts: active_vms
+  gather_facts: false
+  tasks:
+
+    - name: Install SSH keys
+      ansible.builtin.include_role:
+        name: setup_ssh
+        tasks_from: install_keys.yml

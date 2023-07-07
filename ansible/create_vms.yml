@@ -1,0 +1,15 @@
+---
+
+- name: Ensure libvirt_host is defined
+  import_playbook: define_libvirt_host.yml
+
+- name: Create all configured VMs
+  hosts: libvirt_host
+  tasks:
+    - name: Create specified VMs
+      ansible.builtin.include_role:
+        name: libvirt_vm
+        tasks_from: create_vm.yml
+      loop_control:
+        loop_var: vm_config
+      loop: "{{ vm_configs }}"

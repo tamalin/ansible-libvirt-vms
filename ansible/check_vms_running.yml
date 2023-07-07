@@ -1,0 +1,38 @@
+---
+
+- name: Ensure libvirt_host is defined
+  import_playbook: define_libvirt_host.yml
+
+- name: Ensure active_vms is defined
+  import_playbook: define_active_vms_group.yml
+
+- name: Wait until VMs are reachable
+  hosts: libvirt_host
+  gather_facts: false
+  tasks:
+
+    - name: Wait for VM IPs to be pingable
+      ansible.builtin.command: >-
+        ping -c 1 -W 0.1 {{ item.ip }}
+      register: ping_cmd
+      loop: "{{ managed_vms }}"
+      until:
+        - ping_cmd is success
+      retries: 30
+      delay: 2
+      changed_when: false
+
+    - name: Wait for SSH on VMs to be responding
+      ansible.builtin.wait_for:
+        port: 22
+        host: "{{ item.ip }}"
+        search_regex: OpenSSH
+      loop: "{{ managed_vms }}"
+
+- name: Ensure VMs are accessible via SSH
+  hosts: active_vms
+  gather_facts: false
+  tasks:
+
+    - name: Check that VMs are available
+      ansible.builtin.ping:

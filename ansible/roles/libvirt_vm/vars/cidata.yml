@@ -1,0 +1,10 @@
+---
+
+cidata_files: >-
+  {%- set _cfl = [] -%}
+  {%- set _ = _cfl.append("meta-data") -%}
+  {%- set _ = _cfl.append("user-data") -%}
+  {%- if libvirt_vm.cloud_init.config_networking | bool -%}
+  {%-   set _ = _cfl.append("network-config") -%}
+  {%- endif -%}
+  {{- _cfl -}}

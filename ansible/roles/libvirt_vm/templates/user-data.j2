@@ -1,0 +1,37 @@
+#cloud-config
+chpasswd:
+  users:
+  -   name: {{ libvirt_vm.users.root.name }}
+      password: {{ libvirt_vm.users.root.password_hash }}
+      type: hash
+  expire: false
+package_update: true
+packages:
+- vlan
+- qemu-guest-agent
+runcmd:
+- echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+- systemctl restart ssh
+ssh_pwauth: true
+users:
+{% if False %}
+-   default
+-   name: fergal
+    gecos: Fergal Mc Carthy
+    groups: sudo
+    lock_passwd: false
+    passwd: $6$2s..yDyGNvhTnUYp$/t3Thz7gd5dlB.VN3zfaqs/LgsIp2t.cJmDqSD6U3.dbheUG9Q0Z7PvWZHch/5YVcK5iXdnr5pv38IlDMuuLP/
+    shell: /bin/bash
+    ssh_authorized_keys:
+    -   ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAqnXMb4ILzAO2Yk7z6ZzAwWlEBI6flY85tWEF6p/FmDDVBbfrJWLZEh0cNg87MLBtr4p/OHgqWxLxu5QrCauRcwzw87SGDcL9NJ2GcHdJq6rQxftbHPPypAMAYC0J9nAJDACDQPiXLGx1LO/YYS5xICtJdLsVuItQg0oY+n72/KhJ7bJ1IDkFjPeyWMnHYUGz/tQtkY2KvSwXpfQ/+5EU134kMa23tC5EwG6OAh+ReCHqDn4s2SI4/bQMlW3pAzEWaYsQdq3RtU9hE1qpXuQrwGfdxdN2d1pFeYrcPf7VXwb5Y3Q4BaWe6SLI8ukad4eH1E+hXmesrdiFDHt906nU6Q== fergal.mccarthy
+    ssh_import_id:
+    -   gh:rtamalin
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+{% endif %}
+-   name: {{ libvirt_vm.users.mgmt.name }}
+    ssh_authorized_keys: {{ libvirt_vm.users.mgmt.ssh_keys | to_yaml }}
+    passwd: {{ libvirt_vm.users.mgmt.password_hash }}
+    lock_passwd: false
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    groups: sudo
+    shell: /bin/bash

@@ -1,0 +1,44 @@
+ethernets:
+{% for nic in libvirt_vm.nics %}
+  nic{{ loop.index0 }}:
+    match:
+      macaddress: {{ nic.mac | lower }}
+{%   if nic.name is defined  %}
+    set-name: "{{ nic.name }}"
+{%   endif %}
+{%   if nic.addr is defined  %}
+    dhcp4: false
+    addresses:
+      - {{ nic.addr }}
+{%     if nic.gateway is defined  %}
+    routes:
+      - to: default
+        via: {{ nic.gateway }}
+{%       if nic.metric is defined  %}
+        metric: {{ nic.metric }}
+{%       endif %}
+{%     endif %}
+{%     if nic.nameservers is defined  %}
+    nameservers:
+{%       if nic.nameservers.search is defined  %}
+      search:
+{%         for domain in nic.nameservers.search %}
+        - {{ domain }}
+{%         endfor %}
+{%       endif %}
+{%       if nic.nameservers.addresses is defined  %}
+      addresses:
+{%         for server in nic.nameservers.addresses %}
+        - {{ server }}
+{%         endfor %}
+{%       endif %}
+{%     endif %}
+{%   else %}
+    dhcp4: true
+{%     if nic.metric is defined  %}
+    dhcp4-overrides:
+      route-metric: {{ nic.metric }}
+{%     endif %}
+{%   endif %}
+{% endfor %}
+version: 2

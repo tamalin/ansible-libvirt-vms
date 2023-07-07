@@ -1,0 +1,18 @@
+---
+
+# Use a cache dir in /var/tmp to avoid path resolution issues
+# when switching between different users.
+ubuntu_cache_dir: "{{ ['', 'var', 'tmp', 'images', 'ubuntu'] | join('/') }}"
+
+ubuntu:
+  # https://cloud-images.ubuntu.com/jammy/current/
+  image:
+    base_url: >-
+      {{ ubuntu_images_url | default('https://cloud-images.ubuntu.com') }}
+    release: "{{ ubuntu_version | default('jammy') }}"
+    init: "{{ ubuntu_init_type | default('cloud-init') }}"
+    type: "{{ ubuntu_type | default('server') }}"
+    build: "{{ ubuntu_build | default('cloudimg') }}"
+    arch: "{{ ubuntu_arch | default('amd64') }}"
+    date: "{{ ubuntu_build_date | default('current') }}"
+  cache: "{{ ubuntu_cache_dir }}"

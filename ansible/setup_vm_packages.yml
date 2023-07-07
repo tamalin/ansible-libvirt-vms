@@ -1,0 +1,61 @@
+---
+
+- name: Ensure active_vms group is defined
+  import_playbook: define_active_vms_group.yml
+
+- name: Install required packages on active VMs
+  hosts: active_vms
+  gather_facts: false
+  tasks:
+
+    - name: Determine set of required packages
+      ansible.builtin.set_fact:
+        required_packages: >-
+          {%- set _req_pkgs = [] -%}
+          {%- set _pkgs = vm_packages | default(vm_defaults.packages) -%}
+          {%- if _pkgs.required is defined -%}
+          {%-   set _ = _req_pkgs.extend(_pkgs.required) -%}
+          {%- endif -%}
+          {{- _req_pkgs -}}
+
+    - name: Update package cache
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+      register: update_package_cache
+      until: >-
+        "Unable to acquire the dpkg frontend lock" is not in (
+          update_package_cache.msg | default(''))
+      delay: 3
+      retries: 5
+
+    - name: Install required packages
+      become: true
+      ansible.builtin.apt:
+        name: "{{ required_packages }}"
+        state: present
+      register: install_required_packages
+      until: >-
+        "Unable to acquire the dpkg frontend lock" is not in (
+          install_required_packages.msg | default(''))
+      delay: 3
+      retries: 5
+
+    - name: Upgrade system packages
+      become: true
+      ansible.builtin.apt:
+        upgrade: dist
+      register: upgrade_system_packages
+      until: >-
+        "Unable to acquire the dpkg frontend lock" is not in (
+          upgrade_system_packages.msg | default(''))
+      delay: 3
+      retries: 5
+
+    - name: Reboot if required  # noqa no-handler
+      become: true
+      ansible.builtin.reboot:
+      when:
+        - ((install_required_packages is changed) or
+           (upgrade_system_packages is changed))

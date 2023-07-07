@@ -1,0 +1,46 @@
+---
+
+# Dynamically define active VMs as Ansible inventory hosts in
+# the active_vms group, proxying via the specified libvirt host
+# if necessary.
+
+- name: Fail if no viable VMs were detected
+  ansible.builtin.assert:
+    that:
+      - (managed_vms | length) > 0
+    fail_msg: |-
+      No viable VM definitions detected.
+      Ensure that each VM specified by vm_configs in settings/vms.yml
+      either has a NIC entry associated with the specified management
+      network, or has a bridged NIC with a static IP address.
+    quiet: true
+
+- name: Fail if some VMs are missing a management IP address
+  ansible.builtin.assert:
+    that:
+      - (managed_vms | length) == (vm_configs | length)
+    fail_msg: |-
+      All VMs must have an associated IP address that can be used for
+      management purposes.
+      Ensure that each VM specified by vm_configs in settings/vms.yml
+      either has a NIC entry associated with the specified management
+      network, or has a bridged NIC with a static IP address.
+    quiet: true
+
+- name: Add active VMs
+  ansible.builtin.add_host:
+    name: "{{ item.name }}"
+    hostname: "{{ item.name }}"
+    ansible_user: "{{ _vm_user }}"
+    ansible_host: "{{ item.ip }}"
+    ansible_python_interpreter: "{{ vm_mgmt_python | default('/usr/bin/python3') }}"
+    ansible_ssh_private_key_file: "{{ [setup_ssh_key.path.local, setup_ssh_key.files[0].file] | join('/') }}"
+    ansible_ssh_common_args: >-
+      {% if (libvirt_host_type | default('local')) == 'remote' %}
+      -o ProxyCommand='ssh -W %h:%p {{ libvirt_host_user }}@{{ libvirt_host_ip }}'
+      {% endif %}
+      -o UserKnownHostsFile=/dev/null
+    groups:
+      - active_vms
+  loop: "{{ managed_vms }}"
+  changed_when: false
