@@ -29,6 +29,3 @@
 
 - name: Ensure root file system has been resized
   import_playbook: grow_root_filesystem.yml
-
-- name: Ensure required required packages are installed
-  import_playbook: setup_vm_packages.yml

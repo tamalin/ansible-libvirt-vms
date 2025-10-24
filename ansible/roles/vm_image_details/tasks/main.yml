@@ -1,0 +1,5 @@
+---
+
+- name: Show VM Cloud Image that is being used
+  ansible.builtin.debug:
+    var: vm_image.name

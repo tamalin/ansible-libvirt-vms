@@ -40,7 +40,7 @@ that you can log in to using the generated SSH config file, `ssh/config`,
 as follows:
 
 ```shell
-$ ssh -F ssh/config testvma
+$ ssh -F ssh/config VM_NAME
 ```
 
 Re-running the `ansible/vm_env_create.yml` playbook will destroy and

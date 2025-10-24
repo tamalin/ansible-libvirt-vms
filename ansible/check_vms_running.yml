@@ -29,6 +29,21 @@
         search_regex: OpenSSH
       loop: "{{ managed_vms }}"
 
+    - name: Nap
+      ansible.builtin.command: >-
+        sleep 60
+      register: sleep_cmd
+      loop: "{{ managed_vms }}"
+      until:
+        - sleep_cmd is success
+      changed_when: false
+
+# install required packages here
+# since this will ensure that any installs via cloudinit have completed
+- name: Ensure required required packages are installed
+  import_playbook: setup_vm_packages.yml
+
+
 - name: Ensure VMs are accessible via SSH
   hosts: active_vms
   gather_facts: false
@@ -36,3 +51,7 @@
 
     - name: Check that VMs are available
       ansible.builtin.ping:
+      register: ping_result
+      until: ping_result.ping == 'pong'
+      retries: 20
+      delay: 10

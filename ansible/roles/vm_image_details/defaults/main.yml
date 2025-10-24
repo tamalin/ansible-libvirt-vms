@@ -1,0 +1,12 @@
+---
+
+_vm_image_name: "{{ vm.image.release }}"
+
+_vm_image_url_base: "{{ vm.image.base_url }}"
+
+_vm_image_url : "{{ [_vm_image_url_base, _vm_image_name] | join('/') }}"
+
+vm_image:
+  name: "{{ _vm_image_name }}"
+  url: "{{ _vm_image_url }}"
+  cached: "{{ vm.cache }}/{{ _vm_image_name }}"

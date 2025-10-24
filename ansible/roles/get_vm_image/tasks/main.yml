@@ -1,0 +1,19 @@
+---
+
+- name: Create cache dir if needed
+  ansible.builtin.file:
+    path: "{{ vm.cache }}"
+    state: directory
+    mode: "0755"
+
+- name: Download Vm Cloud image to cache if needed
+  ansible.builtin.get_url:
+    dest: "{{ vm_image.cached }}"
+    url: "{{ vm_image.url }}"
+    mode: "0644"
+  register: vm_image_download
+
+- name: Report image that was downloaded
+  ansible.builtin.debug:
+    msg: >-
+      Selected image available as '{{ vm_image.cached }}'

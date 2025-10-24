@@ -1,5 +1,14 @@
 ---
 
+
+vm_images_url: "https://download.opensuse.org/distribution/leap/15.6/appliances/"
+
+vm_version: "openSUSE-Leap-15.6-Minimal-VM.x86_64-Cloud.qcow2"
+vm_type: ""
+vm_build: ""
+vm_arch: x86_64-Cloud
+vm_build_date: ""
+
 #
 # VM Management Libvirt Network
 #
@@ -43,7 +52,7 @@ vm_mgmt_python: /usr/bin/python3
 
 vm_configs:
 
-  - name: testvma
+  - name: vm1
     nics:
 
       # This will be the network used to manage the VMs
@@ -55,13 +64,13 @@ vm_configs:
 
       # Only configure this if you have a bridged network you want to be
       # able to access the VMs via
-      - nettype: bridge
-        netdev: br0
-        # Specify a MAC here and either define a static reservation for
-        # this VM in your network's DHCP config, or specify the static
-        # networking config settings here
-        mac: "52:54:00:00:C0:02"
-        name: "external"
+#      - nettype: bridge
+#        netdev: virbr101
+#        # Specify a MAC here and either define a static reservation for
+#        # this VM in your network's DHCP config, or specify the static
+#        # networking config settings here
+#        mac: "52:54:00:00:C0:02"
+#        name: "external"
 #       addr: 192.168.0.12/20
 #       gateway: 192.168.0.1
 #       metric: 100
@@ -73,7 +82,7 @@ vm_configs:
 #           - 8.8.8.8  # Google
 #           - 8.8.4.4  # Google
 
-  - name: testvmb
+  - name: vm2
     nics:
 
       # This will be the network used to manage the VMs
@@ -85,14 +94,44 @@ vm_configs:
 
       # Only configure this if you have a bridged network you want to be
       # able to access the VMs via
-      - nettype: bridge
-        netdev: br0
-        # Specify a MAC here and either define a static reservation for
-        # this VM in your network's DHCP config, or specify the static
-        # networking config settings here
-        mac: "52:54:00:00:C0:03"
-        name: "external"
-#       addr: 192.168.0.13/20
+#      - nettype: bridge
+#        netdev: virbr101
+#        # Specify a MAC here and either define a static reservation for
+#        # this VM in your network's DHCP config, or specify the static
+#        # networking config settings here
+#        mac: "52:54:00:00:C0:02"
+#        name: "external"
+#       addr: 192.168.0.12/20
+#       gateway: 192.168.0.1
+#       metric: 100
+#       nameservers:
+#         search:
+#           - testvms.local
+#         addresses:
+#           - 1.1.1.1  # CloudFlare
+#           - 8.8.8.8  # Google
+#           - 8.8.4.4  # Google
+
+  - name: vm3
+    nics:
+
+      # This will be the network used to manage the VMs
+      - nettype: network
+        netdev: "{{ vm_mgmt_net }}"
+        mac: "52:54:00:00:C1:04"
+        ip: "192.168.168.14"
+        name: "mgmt"
+
+      # Only configure this if you have a bridged network you want to be
+      # able to access the VMs via
+#      - nettype: bridge
+#        netdev: virbr101
+#        # Specify a MAC here and either define a static reservation for
+#        # this VM in your network's DHCP config, or specify the static
+#        # networking config settings here
+#        mac: "52:54:00:00:C0:02"
+#        name: "external"
+#       addr: 192.168.0.12/20
 #       gateway: 192.168.0.1
 #       metric: 100
 #       nameservers:

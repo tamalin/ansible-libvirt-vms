@@ -18,7 +18,7 @@
           {%- endif -%}
           {{- _req_pkgs -}}
 
-    - name: Update package cache
+    - name: Update package cache Apt
       become: true
       ansible.builtin.apt:
         update_cache: true
@@ -29,8 +29,57 @@
           update_package_cache.msg | default(''))
       delay: 3
       retries: 5
+      when: "'ubuntu' in vm_images_url"
 
-    - name: Install required packages
+    - name: Register with SUSEConnect
+      become: true
+      register: suse_connect
+      ansible.builtin.command: "/usr/bin/suseconnect -r {{ suseconnect.reg_code }} -e {{ suseconnect.email }} --url {{ suseconnect.url }}"
+      until: suse_connect is success
+      delay: 10
+      retries: 5
+      when: >
+         suseconnect is defined and
+         suseconnect and
+         'SLES15-SP' in vm_images_url
+
+    - name: Install required packages Zypper
+      become: true
+      community.general.zypper:
+        name: "{{ required_packages }}"
+        state: present
+        update_cache: true
+        disable_recommends: false
+      register: install_required_packages_suse
+      until:  install_required_packages_suse is success
+      delay: 30
+      retries: 10
+      when: "'suse' in vm_images_url"
+
+
+    - name: Install required graphics pattern Zypper
+      become: true
+      register: install_required_pattern_suse
+      ansible.builtin.command: "zypper in --recommends -y -l --type pattern {{ vm_graphics }}"
+      until:  install_required_pattern_suse is success
+      delay: 10
+      retries: 20
+      when: >
+         "'suse' in vm_images_url" and
+         vm_graphics is defined and
+         vm_graphics
+
+    - name: set graphics mode
+      become: true
+      ansible.builtin.command: "systemctl set-default graphical.target"
+      delay: 10
+      retries: 20
+      when: >
+         "'suse' in vm_images_url" and
+         vm_graphics is defined and
+         vm_graphics
+
+    - name: Install required packages Apt
       become: true
       ansible.builtin.apt:
         name: "{{ required_packages }}"
@@ -41,8 +90,9 @@
           install_required_packages.msg | default(''))
       delay: 3
       retries: 5
+      when: "'ubuntu' in vm_images_url"
 
-    - name: Upgrade system packages
+    - name: Upgrade system packages Apt
       become: true
       ansible.builtin.apt:
         upgrade: dist
@@ -52,10 +102,13 @@
           upgrade_system_packages.msg | default(''))
       delay: 3
       retries: 5
+      when: "'ubuntu' in vm_images_url"
 
     - name: Reboot if required  # noqa no-handler
       become: true
       ansible.builtin.reboot:
-      when:
-        - ((install_required_packages is changed) or
-           (upgrade_system_packages is changed))
+      when: >
+        (install_required_packages is changed) or
+        (upgrade_system_packages is changed) or
+        (install_required_packages_suse is changed) or
+        (install_required_pattern_suse is changed)

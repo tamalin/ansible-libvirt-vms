@@ -22,7 +22,7 @@ Host{% for vm in managed_vms %} {{ vm.name }} {{ vm.ip }}{% endfor %}
     # quieten notice about automatically accepting host key
     LogLevel QUIET
 {% if remote_libvirt %}
-    ProxyCommand ssh -W %h:%p {{ libvirt_host_ip }}
+    ProxyCommand ssh -W %h:%p {{ libvirt_host_user }}@{{ libvirt_host_ip }}
 {% endif %}
     StrictHostKeyChecking no
     User {{ mgmt_user | default(vm_defaults.user) }}

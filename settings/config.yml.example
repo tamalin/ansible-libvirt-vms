@@ -46,3 +46,9 @@
 #  strings:
 #    - "<SSH Public Key Text>"  # noqa yaml[line-length]
 #
+
+# SUSEConnect setup
+suseconnect:
+   reg_code: "REG_CODE"
+   email: "EMAIL"
+   url: "RMT/SCC_URL"

@@ -23,7 +23,7 @@ _vm_password_hash: >-
 
 _def_disks:
   - name: 'scratch'
-    size_gb: 100
+    size_gb: 20
     fstype: 'ext4'
     path: '/srv/scratch'
 
@@ -57,9 +57,9 @@ libvirt_vm:
       password_hash: "{{ _vm_password_hash }}"
       ssh_keys: "{{ _vm_ssh_keys }}"
   image:
-    backing: "{{ _libvirt_images }}/{{ ubuntu_image.name }}"
+    backing: "{{ _libvirt_images }}/{{ vm_image.name }}"
     file: "{{ _libvirt_images }}/{{ _vm_name }}.qcow2"
-    size_gb: "{{ vm_config.disk_size_gb | default(100) }}"
+    size_gb: "{{ vm_config.disk_size_gb | default(50) }}"
   ignition:
     file: "/tmp/{{ _vm_name }}.ign"
     template: "config.ign.j2"
@@ -67,7 +67,7 @@ libvirt_vm:
     image: "{{ _libvirt_images }}/{{ _vm_name }}-cidata.iso"
     config_networking: "{{ create_network_config | default(True) }}"
     cleanup_tmpfiles: "{{ cleanup_cloud_init_tmpfiles | default(False) }}"
-  os_variant: "{{ vm_config.os_variant | default('ubuntu-lts-latest') }}"
+  os_variant: "{{ vm_config.os_variant | default('opensuse15.6') }}"
   hardware:
     ram_mb: "{{ vm_config.ram_mb | default('4096') }}"
     vcpus: "{{ vm_config.vcpus | default('4') }}"

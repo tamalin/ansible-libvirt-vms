@@ -7,7 +7,8 @@
 - name: Install VM backing image
   become: true
   ansible.builtin.copy:
-    src: "{{ ubuntu_image.cached }}"
+#    src: "/home/sampsone/images/openSUSE-Leap-15.6-Minimal-VM.x86_64-Cloud.qcow2"
+    src: "{{ vm_image.cached }}"
     dest: "{{ libvirt_vm.image.backing }}"
     mode: "0644"
     remote_src: true
@@ -15,12 +16,16 @@
 - name: Create ignition config file if needed
   ansible.builtin.include_tasks: setup_ignition_config.yml
   when:
-    - ubuntu.image.init == "ignition"
+    - vm.image.init == "ignition"
 
 - name: Create cloud-init config if needed
   ansible.builtin.include_tasks: setup_cloud_init.yml
   when:
-    - ubuntu.image.init == "cloud-init"
+    - vm.image.init == "cloud-init"
+
+#      --video {{ libvirt_vm.hardware.video }}
+#      --console pty,target_type=virtio
+#      --graphics vnc,listen=0.0.0.0
 
 - name: Create VM {{ libvirt_vm.name }}
   become: true
@@ -38,9 +43,7 @@
       --ram {{ libvirt_vm.hardware.ram_mb }}
       --vcpus {{ libvirt_vm.hardware.vcpus }}
       --cpu {{ libvirt_vm.hardware.cpu_type }}
-      --video {{ libvirt_vm.hardware.video }}
-      --console pty,target_type=virtio
-      --graphics vnc,listen=0.0.0.0
+      --graphics spice
       --rng /dev/urandom
     {% if libvirt_vm.hardware.bus == 'scsi' %}
       --controller type=scsi,model=virtio-scsi
@@ -53,9 +56,9 @@
       --network {{ _netparams | join(',') }}
     {% endfor %}
       --tpm backend.type=emulator,backend.version={{ libvirt_vm.tpm.version }},model={{ libvirt_vm.tpm.model }}
-    {% if ubuntu.image.init == "cloud-init" %}
+    {% if vm.image.init == "cloud-init" %}
       --disk {{ libvirt_vm.cloud_init.image }},device=cdrom
-    {% elif ubuntu.image.init == "ignition" %}
+    {% elif vm.image.init == "ignition" %}
       --sysinfo type=fwcfg,entry0.name="opt/com.coreos/config",entry0.file="{{ libvirt_vm.ignition.file}}"
     {% endif %}
       --disk path={{ libvirt_vm.image.file }},size={{ libvirt_vm.image.size_gb }},backing_store={{

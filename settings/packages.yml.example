@@ -1,12 +1,50 @@
 ---
-
+# packages to be installed after cloudinit runs
 vm_packages:
   required:
-    - apt-file
     - bzip2
-    - e2fsprogs
-    - linux-generic-hwe-22.04
-    - mtr-tiny
-    - podman
-    - podman-docker
-    - xfsprogs
+    - pciutils
+    - yast2
+    - ansible
+    - git-core
+    - unzip
+    - firewalld
+    - firewalld-lang
+    - firewalld-bash-completion
+    - yast2-firewall
+    - python311-firewall
+    - python311-pycparser
+    - python311
+    - python311-cryptography
+    - python311-base
+    - python311-cffi
+    - python311-netaddr
+    - python311-passlib
+    - python311-xml
+    - command-not-found
+
+# Packages to be install durring cloudinit
+# this cannot be used with SLES or SLED releases
+# because install happen before it is possible to
+# run suseconnect
+cloudinit_packages: |+
+    - python311-firewall
+    - python311-libvirt-python
+    - python311-pycparser
+    - python311-PyMySQL
+    - python311
+    - python311-cryptography
+    - python311-base
+    - python311-cffi
+    - python311-netaddr
+    - python311-passlib
+    - python311-xml
+
+# any commands to run at cloud init time
+# the following is an example for installing python 3.11 on SLES/SLED
+cloud_init_commands: |+
+  - SUSEConnect -p sle-module-python3/15.6/x86_64
+  - zypper in -y  python311-firewall python311-pycparser  python311 python311-cryptography python311-base python311-cffi python311-netaddr python311-passlib python311-xml
+
+# For graphics install a graphic pattern
+# vm_graphics: "kde_plasma"

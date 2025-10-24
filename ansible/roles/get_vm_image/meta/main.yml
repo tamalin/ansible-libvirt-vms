@@ -1,21 +1,20 @@
 ---
 
 galaxy_info:
-  role_name: libvirt_vm
-  author: fmccarthy@suse.com
-  description: Manage VMs using Libvirt
-  company: SUSE
+  role_name: get_vm_image
+  author: rahn.tamalin@gmail.com
+  description: Retrieve VM Cloud Images
+  company: Tamalin.net
   license: Apache
   min_ansible_version: "6.0"
   platforms:
     - name: opensuse
       versions:
-        - "15.6"
+        - "15.4"
     - name: Ubuntu
       versions:
         - jammy
   galaxy_tags: []
 
 dependencies:
-  - role: setup_ssh
   - role: vm_image_details

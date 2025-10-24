@@ -7,4 +7,4 @@
   hosts: libvirt_host
   gather_facts: false
   roles:
-    - get_ubuntu_image
+    - get_vm_image

@@ -1,0 +1,18 @@
+---
+
+# Use a cache dir in /var/tmp to avoid path resolution issues
+# when switching between different users.
+vm_cache_dir: "{{ ['', 'var', 'tmp', 'images', 'vm'] | join('/') }}"
+
+vm:
+  # https://cloud-images.vm.com/jammy/current/
+  image:
+    base_url: >-
+      {{ vm_images_url | default('https://cloud-images.vm.com') }}
+    release: "{{ vm_version | default('jammy') }}"
+    init: "{{ vm_init_type | default('cloud-init') }}"
+    type: "{{ vm_type | default('server') }}"
+    build: "{{ vm_build | default('cloudimg') }}"
+    arch: "{{ vm_arch | default('amd64') }}"
+    date: "{{ vm_build_date | default('current') }}"
+  cache: "{{ vm_cache_dir }}"
